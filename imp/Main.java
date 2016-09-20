@@ -21,10 +21,15 @@ public class Main {
 	}
 
 	private static void startServer(){
-		Server server = new Server(0, 0, 0, "");
-		String ipAddress = server.getAddress().getHostAddress();
+		Server server = new Server(0,0,0,"");
+		InetAddress ad = server.getAddress();
+		while(ad == null){
+			ad = server.getAddress();
+		}
+		String ipAddress = ad.getHostAddress();
 		System.out.println(ipAddress);
 		server.start();
+		
 	}
 
 	private static void startClient(String ipAddress){
