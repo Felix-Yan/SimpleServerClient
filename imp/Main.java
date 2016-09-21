@@ -1,10 +1,15 @@
 package imp;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public class Main {
+import javax.swing.JFrame;
+
+public class Main{
+
 	public static void main(String[] args){
 		if(args.length < 1) return;
 		switch(args[0]){
@@ -29,10 +34,12 @@ public class Main {
 		String ipAddress = ad.getHostAddress();
 		System.out.println(ipAddress);
 		server.start();
-		
+		//debug
+		startClient("130.195.7.143");
 	}
 
 	private static void startClient(String ipAddress){
+		//client 130.195.7.144
 		try {
 			InetAddress inet = InetAddress.getByName(ipAddress);
 			Socket socket = new Socket(inet, Server.PORT);

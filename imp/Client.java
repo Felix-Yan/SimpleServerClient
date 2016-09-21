@@ -1,7 +1,8 @@
 package imp;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.io.BufferedReader;
+//import java.awt.event.KeyEvent;
+//import java.awt.event.KeyListener;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,6 +15,11 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
+import javax.swing.JLayeredPane;
+import javax.swing.JRootPane;
+import javax.swing.RootPaneContainer;
 
 
 /**
@@ -22,7 +28,7 @@ import java.util.List;
  * @author yanlong
  *
  */
-public class Client extends Thread {
+public class Client extends Thread{
 	private OutputStreamWriter output;
 	private InputStreamReader input;
 	private final Socket socket;
@@ -58,10 +64,25 @@ public class Client extends Thread {
 			}
 			boolean exit = false;
 			//System.out.println("Client 55: after sending id");
+			//debug
+			BufferedReader br = null;
 			while(!exit){
 				char[] message = new char[3072];
 				input.read(message);
 				processMessage(message);
+				Scanner scanner = new Scanner(System.in);
+				String readString = scanner.nextLine();
+				//br = new BufferedReader(new InputStreamReader(System.in));
+				//String input = br.readLine();
+				/*if(input.length()!=0){
+					send(input+"X");
+				}*/
+				if (readString.isEmpty()) {
+					System.out.println("Read Enter Key.");
+				}
+				if (readString != null) {
+					send(readString+"X");
+				}
 			}
 			socket.close();
 
@@ -162,10 +183,12 @@ public class Client extends Thread {
 			if(message[i] != 'X'){
 				receive+=message[i];
 			}
-		}
-			for(String m: messages){
-				System.out.println("client received: "+m);
+			if(message[i] == '\0'){
+				break;
 			}
-			
+		}
+		for(String m: messages){
+			System.out.println("client received: "+m);
+		}
 	}
 }

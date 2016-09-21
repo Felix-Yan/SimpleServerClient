@@ -133,13 +133,33 @@ public class Server extends Thread{
 			if(message[i] != 'X'){
 				receive+=message[i];
 			}
+			if(message[i] == '\0' || message[i] == '\r' || message[i] == '\n'){
+				break;
+			}
 		}
 		for(String m: messages){
 			try {
+				System.out.println("======================"+m+"====================");//debug
 				out.write("server received: "+m);
+				out.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	/**
+	 * Send message to a specific client indicated by its uid.
+	 * @param content
+	 * @param uid
+	 */
+	private void writeToClient(String content, int uid){
+		Writer out = writers[uid];
+		try {
+			out.write(content);
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
