@@ -9,7 +9,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -112,6 +114,35 @@ public class Server extends Thread{
 		}
 	}
 
+	/**
+	 * Each writer corresponds with one client. The server can send message to the specific client by using
+	 * the specific writer.
+	 * @param message
+	 * @param out
+	 */
+	private void processMessage(char[] message, Writer out){
+		List<String> messages = new ArrayList<String>();
+		String receive = "";
+		int i = 0;
+		for(; i<message.length; i++){
+			if(message[i] == 'X'){
+				receive +='X';
+				messages.add(receive);
+				receive = "";
+			}
+			if(message[i] != 'X'){
+				receive+=message[i];
+			}
+		}
+		for(String m: messages){
+			try {
+				out.write("server received: "+m);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	/*
 	 * The following creates a thread that is always listening to the client that establishes the socket connection
 	 * @author yanlong
@@ -137,7 +168,7 @@ public class Server extends Thread{
 				Writer out = new OutputStreamWriter(connection.getOutputStream());
 				writers[id] = out;
 				sockets[id] = connection;
-				
+
 				//System.out.println("Server 163: before sending address");//debug
 				out.write("A"+address.getHostAddress().toString()+"X");// 'X' indicates the end of the message
 				out.flush();
@@ -147,16 +178,16 @@ public class Server extends Thread{
 					in.read(message);
 					//System.out.println("Server 153: server loop now");//debug
 					//The following prints the message received from the client
-					String input = "";
-					for(int i=0; i<message.length; i++){
+					//String input = "";
+					/*for(int i=0; i<message.length; i++){
 						if(message[i] == '\0' || message[i] == '\r' || message[i] == '\n') break;
 						input += message[i];
-					}
+					}*/
 
-					System.out.println("======================"+input+"====================");//debug
-
-					out.write("Server received: "+input);
-					out.flush();
+					//System.out.println("======================"+input+"====================");//debug
+					processMessage(message,out);
+					/*out.write("Server received: "+input);
+					out.flush();*/
 				}
 
 			} catch (IOException ex) {
